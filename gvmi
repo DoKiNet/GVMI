@@ -1,4 +1,39 @@
 #!/bin/bash
 
 VERSION=1.0
-BUILD=1.0.0
+BUILD=1.0.1
+
+ARG1=$1
+ARG2=$2
+
+if [[ $EUID -ne 0 ]]; then
+    echo "GVMI requires root privileges"
+    exit 1
+fi
+
+
+if [ "$ARG1" == "" ] && [ "$ARG2" == "" ]; then
+    
+    echo -e "\n GVMI - Version: 1.0\n"
+    echo -e " Greenbone Vulnerability Management Installer\n"
+
+    echo -n "Do you want to install GVM 11 ? "
+    read RET
+    
+    if [ "$RET" == "no" ]; then
+        exit 
+    elif [ "$RET" == "yes" ]; then
+        echo "yes"
+    else
+        exit    
+    fi
+
+elif [ "$ARG1" == "help" ] && [ "$ARG2" == "" ]; then
+    echo "" 
+
+elif [ "$ARG1" == "version" ] && [ "$ARG2" == "" ]; then
+    echo "" 
+
+else 
+    echo ""
+fi
