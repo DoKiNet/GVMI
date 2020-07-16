@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION=1.0
-BUILD=1.0.1
+BUILD=1.0.2
 
 ARG1=$1
 ARG2=$2
@@ -23,7 +23,169 @@ if [ "$ARG1" == "" ] && [ "$ARG2" == "" ]; then
     if [ "$RET" == "no" ]; then
         exit 
     elif [ "$RET" == "yes" ]; then
-        echo "yes"
+        apt update
+        useradd -r -d /opt/gvm -c "GVM User" -s /bin/bash gvm
+
+        mkdir /opt/gvm
+        chown gvm:gvm /opt/gvm
+        apt -y install rsync sudo gcc g++ make bison flex libksba-dev curl redis libpcap-dev \
+               cmake git pkg-config libglib2.0-dev libgpgme-dev nmap libgnutls28-dev \
+               uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev \
+               libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev \
+               doxygen gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev \
+               libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml \
+               python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip \
+               texlive-fonts-recommended texlive-latex-extra --no-install-recommends  
+        
+        
+        
+        curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+        apt update
+        apt -y install yarn
+
+        
+        apt -y install postgresql postgresql-contrib postgresql-server-dev-all
+        su - postgres -c "createuser gvm"
+        su - postgres -c "createdb -O gvm gvmd"
+       
+        su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"        
+        su postgres -c "psql gvmd -c 'grant dba to gvm;'"
+        su postgres -c "psql gvmd -c 'create extension \"uuid-ossp\";'" 
+
+        systemctl restart postgresql
+        systemctl enable postgresql
+
+        echo 'export PATH="$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin"' \
+                | sudo tee -a /etc/profile.d/gvm.sh 
+        chmod 0755 /etc/profile.d/gvm.sh 
+        source /etc/profile.d/gvm.sh 
+        bash -c 'cat > /etc/ld.so.conf.d/gvm.conf <<EOF 
+/opt/gvm/lib
+EOF'
+
+        cat > /tmp/temp_gvmi.sh <<EOF
+        mkdir /tmp/gvm-source
+        cd /tmp/gvm-source
+
+        git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
+
+        git clone https://github.com/greenbone/openvas-smb.git
+
+        git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
+
+        git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
+
+        git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
+
+        git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
+
+        git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
+
+        
+
+        export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
+        
+        cd gvm-libs
+        mkdir build
+        cd build 
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+        make
+        make install 
+        
+        cd ../../openvas-smb/
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+        make
+        make install    
+    
+        cd ../../openvas
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+        make
+        make install
+
+
+EOF
+        chmod 755 /tmp/temp_gvmi.sh
+
+        su gvm -c /tmp/temp_gvmi.sh
+
+        echo "" > /tmp/temp_gvmi.sh
+        ldconfig
+        cp /tmp/gvm-source/openvas/config/redis-openvas.conf /etc/redis/
+        chown redis:redis /etc/redis/redis-openvas.conf
+        echo "db_address = /run/redis-openvas/redis.sock" > /opt/gvm/etc/openvas/openvas.conf
+        chown gvm:gvm /opt/gvm/etc/openvas/openvas.conf  
+        usermod -aG redis gvm
+        echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf
+        echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+        sysctl -p
+        
+        cat > /etc/systemd/system/disable_thp.service << EOF
+[Unit]
+Description=Disable Kernel Support for Transparent Huge Pages (THP)
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled && echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag"
+
+[Install]
+WantedBy=multi-user.target         
+EOF
+
+        systemctl daemon-reload
+        systemctl enable --now disable_thp
+        systemctl enable --now redis-server@openvas
+        echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/openvas" > /etc/sudoers.d/gvm
+        echo 'Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"' >> /etc/sudoers.d/gvm
+        echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm 
+        
+        
+        chmod 777 /dev/stderr
+        su gvm -c "greenbone-nvt-sync" 
+       
+        openvas --update-vt-info
+
+
+        export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
+        cd /tmp/gvm-source/gvmd
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+        make
+        make install
+
+        cd ../../gsa
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+        make
+        make install   
+        
+
+        greenbone-scapdata-sync
+        greenbone-certdata-sync
+
+        gvm-manage-certs -a
+
+        export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
+        mkdir -p /opt/gvm/lib/python3.8/site-packages/
+        export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages
+        cd /tmp/gvm-source/ospd
+        python3 setup.py install --prefix=/opt/gvm
+
+        cd ../ospd-openvas
+        python3 setup.py install --prefix=/opt/gvm
+        
+
+        
+
+
+
+
     else
         exit    
     fi
