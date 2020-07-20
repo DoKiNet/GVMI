@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VERSION=1.0
-BUILD=1.0.2
+GVMI_VERSION=1.0
+GVMI_BUILD=1.0.3
 
 ARG1=$1
 ARG2=$2
@@ -11,17 +11,38 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+if [ "$ARG1" == "install" ] && [ "$ARG2" == "gvm11" ]; then
+    source /etc/os-release
+    if [ "$ID" == "debian" ] && [ "$VERSION_ID" == "10" ]; then
+        source include/install/gvm11/debian10.sh
+    else
+        echo -e "\n OS NOT SUPPORTED\n"
+    fi
 
-if [ "$ARG1" == "" ] && [ "$ARG2" == "" ]; then
-    
+elif [ "$ARG1" == "help" ] && [ "$ARG2" == "" ]; then
+    echo ""
+
+elif [ "$ARG1" == "version" ] && [ "$ARG2" == "" ]; then
+    echo ""
+
+else
+    echo ""
+
+fi
+
+
+
+######## BEGIN TODELETE ###################################
+if [ "$ARG1" == "OLD-TODELETE" ] && [ "$ARG2" == "OLD-TODELETE" ]; then
+
     echo -e "\n GVMI - Version: 1.0\n"
     echo -e " Greenbone Vulnerability Management Installer\n"
 
     echo -n "Do you want to install GVM 11 ? "
     read RET
-    
+
     if [ "$RET" == "no" ]; then
-        exit 
+        exit
     elif [ "$RET" == "yes" ]; then
         apt update
         useradd -r -d /opt/gvm -c "GVM User" -s /bin/bash gvm
@@ -35,32 +56,32 @@ if [ "$ARG1" == "" ] && [ "$ARG2" == "" ]; then
                doxygen gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev \
                libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml \
                python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip \
-               texlive-fonts-recommended texlive-latex-extra --no-install-recommends  
-        
-        
-        
+               texlive-fonts-recommended texlive-latex-extra --no-install-recommends
+
+
+
         curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
         echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
         apt update
         apt -y install yarn
 
-        
+
         apt -y install postgresql postgresql-contrib postgresql-server-dev-all
         su - postgres -c "createuser gvm"
         su - postgres -c "createdb -O gvm gvmd"
-       
-        su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"        
+
+        su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"
         su postgres -c "psql gvmd -c 'grant dba to gvm;'"
-        su postgres -c "psql gvmd -c 'create extension \"uuid-ossp\";'" 
+        su postgres -c "psql gvmd -c 'create extension \"uuid-ossp\";'"
 
         systemctl restart postgresql
         systemctl enable postgresql
 
         echo 'export PATH="$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin"' \
-                | sudo tee -a /etc/profile.d/gvm.sh 
-        chmod 0755 /etc/profile.d/gvm.sh 
-        source /etc/profile.d/gvm.sh 
-        bash -c 'cat > /etc/ld.so.conf.d/gvm.conf <<EOF 
+                | sudo tee -a /etc/profile.d/gvm.sh
+        chmod 0755 /etc/profile.d/gvm.sh
+        source /etc/profile.d/gvm.sh
+        bash -c 'cat > /etc/ld.so.conf.d/gvm.conf <<EOF
 /opt/gvm/lib
 EOF'
 
@@ -82,24 +103,24 @@ EOF'
 
         git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
 
-        
+
 
         export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
-        
+
         cd gvm-libs
         mkdir build
-        cd build 
+        cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
         make
-        make install 
-        
+        make install
+
         cd ../../openvas-smb/
         mkdir build
         cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
         make
-        make install    
-    
+        make install
+
         cd ../../openvas
         mkdir build
         cd build
@@ -118,12 +139,12 @@ EOF
         cp /tmp/gvm-source/openvas/config/redis-openvas.conf /etc/redis/
         chown redis:redis /etc/redis/redis-openvas.conf
         echo "db_address = /run/redis-openvas/redis.sock" > /opt/gvm/etc/openvas/openvas.conf
-        chown gvm:gvm /opt/gvm/etc/openvas/openvas.conf  
+        chown gvm:gvm /opt/gvm/etc/openvas/openvas.conf
         usermod -aG redis gvm
         echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf
         echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
         sysctl -p
-        
+
         cat > /etc/systemd/system/disable_thp.service << EOF
 [Unit]
 Description=Disable Kernel Support for Transparent Huge Pages (THP)
@@ -133,7 +154,7 @@ Type=simple
 ExecStart=/bin/sh -c "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled && echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag"
 
 [Install]
-WantedBy=multi-user.target         
+WantedBy=multi-user.target
 EOF
 
         systemctl daemon-reload
@@ -141,12 +162,12 @@ EOF
         systemctl enable --now redis-server@openvas
         echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/openvas" > /etc/sudoers.d/gvm
         echo 'Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"' >> /etc/sudoers.d/gvm
-        echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm 
-        
-        
+        echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
+
+
         chmod 777 /dev/stderr
-        su gvm -c "greenbone-nvt-sync" 
-       
+        su gvm -c "greenbone-nvt-sync"
+
         openvas --update-vt-info
 
 
@@ -163,8 +184,8 @@ EOF
         cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
         make
-        make install   
-        
+        make install
+
 
         greenbone-scapdata-sync
         greenbone-certdata-sync
@@ -179,23 +200,17 @@ EOF
 
         cd ../ospd-openvas
         python3 setup.py install --prefix=/opt/gvm
-        
 
-        
+
+
 
 
 
 
     else
-        exit    
+        exit
     fi
 
-elif [ "$ARG1" == "help" ] && [ "$ARG2" == "" ]; then
-    echo "" 
 
-elif [ "$ARG1" == "version" ] && [ "$ARG2" == "" ]; then
-    echo "" 
-
-else 
-    echo ""
 fi
+########## END TODELETE####################################à
