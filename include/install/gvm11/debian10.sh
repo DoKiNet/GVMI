@@ -134,8 +134,27 @@ EOF
         /opt/gvm11/sbin/greenbone-scapdata-sync
         /opt/gvm11/sbin/greenbone-certdata-sync
         su gvm -c "/opt/gvm11/sbin/gvmd --listen=127.0.0.1"
+        su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
+
+        apt -y install texlive-latex-extra --no-install-recommends
+        apt -y install texlive-fonts-recommended xsltproc xmlstarlet \
+                    zip rpm fakeroot dpkg nsis gnupg sshpass \
+                    socat snmp smbclient haveged
         #### END GVMD 9.0.1 ####
 
+        #### BEGIN IANA Services Names ####
+        #BUG WITH GVMD 9.0.1, fixed in next release
+        #cd /opt/gvm11/src
+        #mkdir iana
+        #cd iana
+        #wget https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xml
+        #/opt/gvm11/sbin/gvm-portnames-update service-names-port-numbers.xml
+        #rm service-names-port-numbers.xml
+        #### END IANA Services Names ####
+
+        #### BEGIN GSA 9.0.1 ####
+
+        #### END GSA 9.0.1 ####
 else
     exit
 fi
