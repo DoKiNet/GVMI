@@ -153,7 +153,29 @@ EOF
         #### END IANA Services Names ####
 
         #### BEGIN GSA 9.0.1 ####
+        cd /opt/gvm11/src
+        wget https://github.com/greenbone/gsa/archive/v9.0.1.tar.gz
+        tar -xvzf v9.0.1.tar.gz
+        rm v9.0.1.tar.gz
+        mv gsa-9.0.1 gsa
+        cd gsa
+        apt -y install libmicrohttpd-dev libxml2-dev python-polib \
+                       apt-transport-https
 
+        curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+        apt update
+        apt -y install yarn
+
+        export PKG_CONFIG_PATH=/opt/gvm11/lib/pkgconfig:$PKG_CONFIG_PATH
+        mkdir build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm11 ..
+        make install
+
+        chown -R gvm:gvm /opt/gvm11
+        chmod -R 755 /opt/gvm11
+        su gvm -c "/opt/gvm11/sbin/gsad"
         #### END GSA 9.0.1 ####
 else
     exit
