@@ -144,6 +144,9 @@ EOF
         su gvm -c "/opt/gvm11/sbin/gvmd --osp-vt-update=/opt/gvm11/var/run/ospd.sock"
         su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
 
+        su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="Amian - OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
+        #su gvm -c "/opt/gvm11/sbin/gvmd --delete-scanner=08b69003-5fc2-4037-a479-93b440211c73"
+
         apt -y install texlive-latex-extra --no-install-recommends
         apt -y install texlive-fonts-recommended xsltproc xmlstarlet \
                     zip rpm fakeroot dpkg nsis gnupg sshpass \
