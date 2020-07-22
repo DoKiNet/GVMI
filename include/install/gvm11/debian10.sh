@@ -101,6 +101,11 @@ EOF
         cd ospd-openvas
         apt install python3-psutil
         python3 setup.py install --prefix=/opt/gvm11
+
+        export PYTHONPATH=/opt/gvm11/lib/python3.7/site-packages/
+        export PATH=$PATH:/opt/gvm11/bin:/opt/gvm11/sbin
+        mkdir -p /var/run/ospd
+        /opt/gvm11/bin/ospd-openvas -f -u /opt/gvm11/var/run/ospd.sock --pid-file /opt/gvm11/var/run/ospd-openvas.pid --log-file /opt/gvm11/var/log/gvm/ospd-openvas.log
         #### END OSPD-OPENVAS 1.0.1 ####
 
         #### BEGIN GVMD 9.0.1 ####
@@ -133,7 +138,10 @@ EOF
         chmod -R 755 /opt/gvm11
         /opt/gvm11/sbin/greenbone-scapdata-sync
         /opt/gvm11/sbin/greenbone-certdata-sync
-        su gvm -c "/opt/gvm11/sbin/gvmd"
+        #su gvm -c "/opt/gvm11/sbin/gvmd"
+        chown -R gvm:gvm /opt/gvm11
+        chmod -R 755 /opt/gvm11
+        su gvm -c "/opt/gvm11/sbin/gvmd --osp-vt-update=/opt/gvm11/var/run/ospd.sock"
         su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
 
         apt -y install texlive-latex-extra --no-install-recommends
