@@ -105,7 +105,7 @@ EOF
         export PYTHONPATH=/opt/gvm11/lib/python3.7/site-packages/
         export PATH=$PATH:/opt/gvm11/bin:/opt/gvm11/sbin
         mkdir -p /var/run/ospd
-        /opt/gvm11/bin/ospd-openvas -f -u /opt/gvm11/var/run/ospd.sock --pid-file /opt/gvm11/var/run/ospd-openvas.pid --log-file /opt/gvm11/var/log/gvm/ospd-openvas.log
+        /opt/gvm11/bin/ospd-openvas -f -u /opt/gvm11/var/run/ospd.sock --pid-file /opt/gvm11/var/run/ospd-openvas.pid --log-file /opt/gvm11/var/log/gvm/ospd-openvas.log &
         #### END OSPD-OPENVAS 1.0.1 ####
 
         #### BEGIN GVMD 9.0.1 ####
@@ -146,6 +146,7 @@ EOF
 
         su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="Amian - OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
         #su gvm -c "/opt/gvm11/sbin/gvmd --delete-scanner=08b69003-5fc2-4037-a479-93b440211c73"
+        #su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=08b69003-5fc2-4037-a479-93b440211c73 of OpenVAS Default --scanner-host=/opt/gvm11/var/run/ospd.sock"
 
         apt -y install texlive-latex-extra --no-install-recommends
         apt -y install texlive-fonts-recommended xsltproc xmlstarlet \
