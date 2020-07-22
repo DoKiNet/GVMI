@@ -133,7 +133,7 @@ EOF
         chmod -R 755 /opt/gvm11
         /opt/gvm11/sbin/greenbone-scapdata-sync
         /opt/gvm11/sbin/greenbone-certdata-sync
-        su gvm -c "/opt/gvm11/sbin/gvmd --listen=127.0.0.1"
+        su gvm -c "/opt/gvm11/sbin/gvmd"
         su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
 
         apt -y install texlive-latex-extra --no-install-recommends
