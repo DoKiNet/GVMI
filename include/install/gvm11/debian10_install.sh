@@ -144,7 +144,11 @@ EOF
         su gvm -c "/opt/gvm11/sbin/gvmd --osp-vt-update=/opt/gvm11/var/run/ospd.sock"
         su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
 
-        su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="Amian - OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
+        OPENVAS_DEFAULT_ID=$(su gvm -c "/opt/gvm11/sbin/gvmd --get-scanners|grep -E 'OpenVAS Default' | cut -d ' ' -f 1")
+        su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=$OPENVAS_DEFAULT_ID --scanner-host=/opt/gvm11/var/run/ospd.sock"
+
+
+        #su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="Amian - OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
         #su gvm -c "/opt/gvm11/sbin/gvmd --delete-scanner=08b69003-5fc2-4037-a479-93b440211c73"
         #su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=08b69003-5fc2-4037-a479-93b440211c73 of OpenVAS Default --scanner-host=/opt/gvm11/var/run/ospd.sock"
 
