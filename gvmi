@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GVMI_VERSION=1.0
-GVMI_BUILD=1.0.12
+GVMI_BUILD=1.0.13
 
 ARG1=$1
 ARG2=$2
@@ -14,7 +14,7 @@ fi
 if [ "$ARG1" == "install" ] && [ "$ARG2" == "gvm11" ]; then
     source /etc/os-release
     if [ "$ID" == "debian" ] && [ "$VERSION_ID" == "10" ]; then
-        source include/install/gvm11/debian10.sh
+        source include/install/gvm11/debian10_install.sh
     else
         echo -e "\n OS NOT SUPPORTED\n"
     fi
@@ -45,9 +45,7 @@ elif [ "$ARG1" == "update" ] && [ "$ARG2" == "client" ]; then
     echo ""
 
 elif [ "$ARG1" == "start" ] && [ "$ARG2" == "gvm11" ]; then
-    echo ""
-    echo " Function not yet implemented"
-    echo ""
+    source include/start_stop/gvm11/debian10_start.sh
 
 elif [ "$ARG1" == "stop" ] && [ "$ARG2" == "gvm11" ]; then
     echo ""
