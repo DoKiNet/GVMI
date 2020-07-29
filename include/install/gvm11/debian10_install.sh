@@ -105,7 +105,12 @@ EOF
         export PYTHONPATH=/opt/gvm11/lib/python3.7/site-packages/
         export PATH=$PATH:/opt/gvm11/bin:/opt/gvm11/sbin
         mkdir -p /var/run/ospd
-        /opt/gvm11/bin/ospd-openvas -f -u /opt/gvm11/var/run/ospd.sock --pid-file /opt/gvm11/var/run/ospd-openvas.pid --log-file /opt/gvm11/var/log/gvm/ospd-openvas.log &
+        chmod -R 777 /var/run/ospd
+        /opt/gvm11/bin/ospd-openvas -f -u /opt/gvm11/var/run/ospd.sock \
+                                    --socket-mode 0o777 \
+                                    --pid-file /opt/gvm11/var/run/ospd-openvas.pid \
+                                    --log-file /opt/gvm11/var/log/gvm/ospd-openvas.log&
+
         #### END OSPD-OPENVAS 1.0.1 ####
 
         #### BEGIN GVMD 9.0.1 ####
