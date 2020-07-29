@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GVMI_VERSION=1.0
-GVMI_BUILD=1.0.16
+GVMI_BUILD=1.0.17
 
 ARG1=$1
 ARG2=$2
@@ -25,9 +25,7 @@ elif [ "$ARG1" == "uninstall" ] && [ "$ARG2" == "gvm11" ]; then
     echo ""
 
 elif [ "$ARG1" == "update" ] && [ "$ARG2" == "gvm11" ]; then
-    echo ""
-    echo " Function not yet implemented"
-    echo ""
+    source include/update/gvm11/debian10_update.sh
 
 elif [ "$ARG1" == "install" ] && [ "$ARG2" == "client" ]; then
     echo ""
