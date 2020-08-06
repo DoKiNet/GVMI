@@ -70,7 +70,7 @@ EOF
         #### END OPENVAS 7.0.1 ####
 
         #### BEGIN REDIS-SERVER ####
-        apt install redis
+        apt -y install redis
         cp /opt/gvm11/src/openvas/config/redis-openvas.conf /etc/redis/
         chown redis:redis /etc/redis/redis-openvas.conf
         mkdir -p /run/redis-openvas/
@@ -143,7 +143,7 @@ EOF
         chmod -R 755 /opt/gvm11
         /opt/gvm11/sbin/greenbone-scapdata-sync
         /opt/gvm11/sbin/greenbone-certdata-sync
-        #su gvm -c "/opt/gvm11/sbin/gvmd"
+
         chown -R gvm:gvm /opt/gvm11
         chmod -R 755 /opt/gvm11
         su gvm -c "/opt/gvm11/sbin/gvmd --osp-vt-update=/opt/gvm11/var/run/ospd.sock"
@@ -153,9 +153,9 @@ EOF
         su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=$OPENVAS_DEFAULT_ID --scanner-host=/opt/gvm11/var/run/ospd.sock"
 
 
-        #su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="Amian - OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
-        #su gvm -c "/opt/gvm11/sbin/gvmd --delete-scanner=08b69003-5fc2-4037-a479-93b440211c73"
-        #su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=08b69003-5fc2-4037-a479-93b440211c73 of OpenVAS Default --scanner-host=/opt/gvm11/var/run/ospd.sock"
+        #su gvm -c '/opt/gvm11/sbin/gvmd --create-scanner="OpenVAS Scanner" --scanner-type="OpenVAS" --scanner-host=/opt/gvm11/var/run/ospd.sock'
+        #su gvm -c "/opt/gvm11/sbin/gvmd --delete-scanner=084444003-5fc2-4037-a479-93b3126211c73"
+        #su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=083432303-5fc2-4037-a479-93b4665211c73 of OpenVAS Default --scanner-host=/opt/gvm11/var/run/ospd.sock"
 
         apt -y install texlive-latex-extra --no-install-recommends
         apt -y install texlive-fonts-recommended xsltproc xmlstarlet \
