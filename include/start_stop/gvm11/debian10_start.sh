@@ -31,6 +31,8 @@ su gvm -c "/opt/gvm11/sbin/gvmd --osp-vt-update=/opt/gvm11/var/run/ospd.sock"
 
 su gvm -c "/opt/gvm11/sbin/gsad"
 
+chmod 777 /tmp/gvm-sync-cert
+chmod 777 /tmp/gvm-sync-scap
 
 echo ""
 echo " GVM11 STARTED"

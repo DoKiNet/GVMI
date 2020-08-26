@@ -203,7 +203,8 @@ EOF
         su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
         OPENVAS_DEFAULT_ID=$(su gvm -c "/opt/gvm11/sbin/gvmd --get-scanners|grep -E 'OpenVAS Default' | cut -d ' ' -f 1")
         su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=$OPENVAS_DEFAULT_ID --scanner-host=/opt/gvm11/var/run/ospd.sock"
-
+        chmod 777 /tmp/gvm-sync-cert
+        chmod 777 /tmp/gvm-sync-scap
 
 else
     exit
