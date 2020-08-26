@@ -1,7 +1,7 @@
 #!/bin/bash
 
-GVMI_VERSION=1.1
-GVMI_BUILD=1.1.1
+GVMI_VERSION=1.2
+GVMI_BUILD=1.2.0
 
 ARG1=$1
 ARG2=$2
@@ -27,15 +27,27 @@ elif [ "$ARG1" == "uninstall" ] && [ "$ARG2" == "gvm11" ]; then
 elif [ "$ARG1" == "update" ] && [ "$ARG2" == "gvm11" ]; then
     source include/update/gvm11/debian10_update.sh
 
+################## BEGIN - INSTALL CLIENT ##################
 elif [ "$ARG1" == "install" ] && [ "$ARG2" == "client" ]; then
-    echo ""
-    echo " Function not yet implemented"
-    echo ""
+    cp ./gvmi /bin/gvmi
+	chown root:root /bin/gvmi
+	chmod 770 /bin/gvmi
 
+    echo ""
+    echo "GVMI CLIENT - INSTALLED"
+    echo ""
+################## END - INSTALL CLIENT ##################
+
+
+################## BEGIN - UNINSTALL CLIENT ##################
 elif [ "$ARG1" == "uninstall" ] && [ "$ARG2" == "client" ]; then
+    rm /bin/gvmi
+
     echo ""
-    echo " Function not yet implemented"
+    echo "GVMI CLIENT - UNINSTALLED"
     echo ""
+################## END - UNINSTALL CLIENT ##################
+
 
 elif [ "$ARG1" == "update" ] && [ "$ARG2" == "client" ]; then
     echo ""
@@ -48,15 +60,35 @@ elif [ "$ARG1" == "start" ] && [ "$ARG2" == "gvm11" ]; then
 elif [ "$ARG1" == "stop" ] && [ "$ARG2" == "gvm11" ]; then
     source include/start_stop/gvm11/debian10_stop.sh
 
-elif [ "$ARG1" == "help" ] && [ "$ARG2" == "" ]; then
-    echo ""
-    echo " Function not yet implemented"
-    echo ""
 
-elif [ "$ARG1" == "version" ] && [ "$ARG2" == "" ]; then
-    echo ""
-    echo " Function not yet implemented"
-    echo ""
+
+###################### BEGIN - HELP ##################
+    elif [ "$ARG1" == "help" ] || [ "$ARG1" == "-h" ] || \
+         [ "$ARG1" == "--help" ] || [ "$ARG1" == "-help" ] || \
+         [ "$ARG1" == "--h" ] || [ "$ARG1" == "h" ]; then
+
+        echo -e "\n GVMI - Version: $GVMI_VERSION   Build: $GVMI_BUILD\n"
+        echo -e " Greenbone Vulnerability Management Installer\n\n"
+
+        echo -e " commands:\n"
+        echo "  install gvm11        GVM 11 installation"
+        echo "  install client       gvmi client installation"
+        echo "  uninstall client     uninstall gvmi client"
+        echo "  version              provide gvmi version"
+        echo "  help                 provide gvmi help"
+        echo -e "\n"
+####################### END - HELP ##################
+
+
+################## BEGIN - VERSION ##################
+elif [ "$ARG1" == "version" ] || [ "$ARG1" == "-v" ] || \
+     [ "$ARG1" == "--version" ] || [ "$ARG1" == "-version" ] || \
+     [ "$ARG1" == "--v" ] || [ "$ARG1" == "v" ]; then
+
+    echo -e "\n GVMI - Version: $GVMI_VERSION   Build: $GVMI_BUILD\n"
+    echo -e " Greenbone Vulnerability Management Installer\n"
+################## END - VERSION ##################
+
 
 else
     echo ""
