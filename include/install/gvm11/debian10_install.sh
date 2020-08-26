@@ -198,6 +198,13 @@ EOF
         chmod -R 755 /opt/gvm11
         su gvm -c "/opt/gvm11/sbin/gsad"
         #### END GSA 9.0.1 ####
+
+
+        su gvm -c "/opt/gvm11/sbin/gvmd --create-user=admin --password=live"
+        OPENVAS_DEFAULT_ID=$(su gvm -c "/opt/gvm11/sbin/gvmd --get-scanners|grep -E 'OpenVAS Default' | cut -d ' ' -f 1")
+        su gvm -c "/opt/gvm11/sbin/gvmd --modify-scanner=$OPENVAS_DEFAULT_ID --scanner-host=/opt/gvm11/var/run/ospd.sock"
+
+
 else
     exit
 fi
