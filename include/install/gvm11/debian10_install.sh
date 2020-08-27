@@ -126,6 +126,7 @@ EOF
                        xsltproc postgresql postgresql-contrib \
                        postgresql-server-dev-all
         export PKG_CONFIG_PATH=/opt/gvm11/lib/pkgconfig:$PKG_CONFIG_PATH
+        service postgresql start #start service for chroot environment
         mkdir build
         cd build
         cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm11 ..
