@@ -129,7 +129,7 @@ EOF
 
         #systemctl stop postgresql
         #su postgres -c "/usr/lib/postgresql/11/bin/postgres -D /etc/postgresql/11/main"& #start postgresql for chroot environment
-        pg_ctlcluster 11 main start
+        #pg_ctlcluster 11 main start
 
         mkdir build
         cd build
