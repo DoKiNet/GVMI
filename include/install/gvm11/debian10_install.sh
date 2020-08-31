@@ -127,8 +127,9 @@ EOF
                        postgresql-server-dev-all
         export PKG_CONFIG_PATH=/opt/gvm11/lib/pkgconfig:$PKG_CONFIG_PATH
 
-        systemctl stop postgresql
-        su postgres -c "/usr/lib/postgresql/11/bin/postgres -D /etc/postgresql/11/main"& #start postgresql for chroot environment
+        #systemctl stop postgresql
+        #su postgres -c "/usr/lib/postgresql/11/bin/postgres -D /etc/postgresql/11/main"& #start postgresql for chroot environment
+        pg_ctlcluster 11 main start
 
         mkdir build
         cd build
