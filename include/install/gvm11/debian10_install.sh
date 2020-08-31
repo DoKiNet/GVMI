@@ -13,6 +13,7 @@ elif [ "$RET" == "yes" ] || [ "$RET" == "YES" ] || [ "$RET" == "Yes" ] || \
         [ "$RET" == "Y" ] || [ "$RET" == "y" ] || [ "$RET" == "" ]; then
 
         apt update
+        apt -y install wget
 
         #### BEGIN GVM-LIBS 11.0.1 ####
         mkdir -p /opt/gvm11
@@ -44,7 +45,7 @@ elif [ "$RET" == "yes" ] || [ "$RET" == "YES" ] || [ "$RET" == "Yes" ] || \
         cd /opt/gvm11/src/openvas
         apt -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev \
                     libglib2.0-dev libpcap-dev libgpgme-dev bison \
-                    libksba-dev libsnmp-dev libgcrypt20-dev wget rsync \
+                    libksba-dev libsnmp-dev libgcrypt20-dev rsync \
                     curl
         export PKG_CONFIG_PATH=/opt/gvm11/lib/pkgconfig:$PKG_CONFIG_PATH
         mkdir build
